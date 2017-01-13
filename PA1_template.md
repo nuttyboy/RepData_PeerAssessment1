@@ -6,7 +6,7 @@ by Nutty
 # setting global Options as echo=TRUE
 ```
 
-## Loading and preprocessing the data
+##<span style="color:blue">Loading and preprocessing the data</span>
 
 1. Load the data (i.e. 𝚛𝚎𝚊𝚍.𝚌𝚜𝚟())
 
@@ -28,7 +28,7 @@ actread$weekpart <-
            "Weekday")
 ```
 
-## What is mean total number of steps taken per day?
+##<span style="color:blue">What is mean total number of steps taken per day?</span>
 
 1. Calculate the total number of steps taken per day
 
@@ -41,6 +41,7 @@ stepsum <-
     aggregate(actomitna$steps,
               by = list(actomitna$date),
               sum)
+names(stepsum) <- c("Date","steps")
 ```
 
 2. Make a histogram of the total number of steps taken each day
@@ -50,7 +51,7 @@ stepsum <-
 # Plotting Histogram
 library(ggplot2)
 par(mar = c(5, 5, 5, 2))
-ggplot(stepsum, aes(x)) +
+ggplot(stepsum, aes(steps)) +
     geom_histogram(binwidth = 2500, aes(fill = ..count..)) +
     scale_fill_gradient("Count", low = "green", high = "orange") +
     theme(
@@ -72,8 +73,8 @@ ggplot(stepsum, aes(x)) +
     ) +
     xlim(0, 25000) +
     ylim(0, 20) +
-    labs(title = "Histogram of Total Steps per day \n(NAs omitted)") +
-    xlab("Total Steps per day") +
+    labs(title = "Histogram of Total steps per day \n(NAs omitted)") +
+    xlab("Total Steps Per Day") +
     ylab("Frequency")
 ```
 
@@ -89,11 +90,12 @@ actmean <- mean(stepsum[, 2])
 actmedian <- median(stepsum[, 2])
 ```
 
+  
+The **MEAN** total number of steps taken per day after removing NA values is **10766.19**   
 
-The MEAN total number of steps taken per day after removing NA values is 10766.19   
-The MEDIAN total number of steps taken per day after removing NA values is 10765
+The **MEDIAN** total number of steps taken per day after removing NA values is **10765**
 
-## What is the average daily activity pattern?
+##<span style="color:blue">What is the average daily activity pattern?</span>
 
 1. Make a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
@@ -104,6 +106,7 @@ avgday <-
               by = list(actread$interval),
               mean,
               na.rm = TRUE)
+names(avgday) <- c("interval","steps")
 ```
 
 
@@ -111,7 +114,7 @@ avgday <-
 # Time Series plot
 library(ggplot2)
 par(mar = c(5, 5, 5, 2))
-ggplot(avgday, aes(Group.1, x)) +
+ggplot(avgday, aes(interval, steps)) +
     geom_line(color = "brown") +
     theme(
         panel.background = element_blank(),
@@ -146,9 +149,9 @@ maxavg <- avgday[max(avgday[,2]),]
 ```
 
 
-The 5-Minute interval which the highest average (56.3) numer of steps is 1705  
+The 5-Minute interval which the highest average (56.3) numer of steps is **1705**  
 
-## Imputing missing values
+##<span style="color:blue">Imputing missing values</span>
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with 𝙽𝙰s)
 
@@ -158,7 +161,7 @@ stepsna <- sum(is.na(actread[,1]))
 ```
 
 
-2304 rows have NA values  
+**2304** rows have NA values  
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
@@ -170,10 +173,11 @@ cleanday <-
     aggregate(actclean$steps,
               by = list(actclean$interval),
               mean)
+names(cleanday) <- c("interval","avgsteps")
 nachunk <- actread[is.na(actread$steps), ]
 naimpute <-
-    merge(nachunk, cleanday, by.x = "interval", by.y = "Group.1")
-naimpute$steps <- round(naimpute$x, 0)
+    merge(nachunk, cleanday, by.x = "interval", by.y = "interval")
+naimpute$steps <- round(naimpute$avgsteps, 0)
 ```
 
 
@@ -195,6 +199,7 @@ freshstep <-
     aggregate(actfresh$steps,
               by = list(actfresh$date),
               sum)
+names(freshstep) <- c("Date","steps")
 ```
 
 
@@ -202,7 +207,7 @@ freshstep <-
 # Plotting New Histogram
 library(ggplot2)
 par(mar = c(5, 5, 5, 2))
-ggplot(freshstep, aes(x)) +
+ggplot(freshstep, aes(steps)) +
     geom_histogram(binwidth = 2500, aes(fill = ..count..)) +
     scale_fill_gradient("Count", low = "navy blue", high = "purple") +
     theme(
@@ -224,8 +229,8 @@ ggplot(freshstep, aes(x)) +
     ) +
     xlim(0, 25000) +
     ylim(0, 25) +
-    labs(title = "Histogram of Total Steps per day") +
-    xlab("Total Steps per day") +
+    labs(title = "Histogram of Total steps per day") +
+    xlab("Total Steps Per Day") +
     ylab("Frequency")
 ```
 
@@ -244,18 +249,19 @@ Impactmedian <- actmedian-freshmedian
 ```
 
 
-The MEAN total number of steps taken per day after imputing NA values is 10765.64   
-The MEDIAN total number of steps taken per day after imputing NA values is 10762
+The **MEAN** total number of steps taken per day after imputing NA values is **10765.64**   
+The **MEDIAN** total number of steps taken per day after imputing NA values is **10762**
 
-The impact of the missing data on the MEAN is 0.55 steps and on the MEDIAN is 3 steps   
+The impact of the missing data on the MEAN is **0.55** steps and on the MEDIAN is **3** steps   
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+##<span style="color:blue">Are there differences in activity patterns between weekdays and weekends?</span>
 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
 ```r
 # New factor variable
+# Note: We are using the imputed data for NA values here
 weekact <-
     aggregate(actfresh$steps,
               by = c(list(actfresh$interval), list(actfresh$weekpart)),
@@ -280,11 +286,11 @@ ggplot(weekact, aes(interval, steps)) +
         panel.grid.minor = element_blank(),
         axis.line = element_line(color = "black", size = 0.5),
         axis.text.x = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
+        axis.title.x = element_text(size = 12,color="brown"),
         axis.text.y = element_text(size = 12),
-        axis.title.y = element_text(size = 12),
-        strip.text = element_text(size = 12, color = "red"),
-        strip.background = element_rect(fill = "light blue"),
+        axis.title.y = element_text(size = 12,color="brown"),
+        strip.text = element_text(size = 12, color = "black"),
+        strip.background = element_rect(fill = "light gray"),
         plot.title = element_text(
             family = "Palatino",
             size = 15,
@@ -301,4 +307,5 @@ ggplot(weekact, aes(interval, steps)) +
 
 <img src="PA1_template_files/figure-html/New Time Series Plot-1.png" style="display: block; margin: auto;" />
 
+ <center>   ---END OF CODE---</center>
 
