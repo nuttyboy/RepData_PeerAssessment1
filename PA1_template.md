@@ -145,11 +145,11 @@ ggplot(avgday, aes(interval, steps)) +
 
 ```r
 # Calculate Max value
-maxavg <- avgday[max(avgday[,2]),]
+maxavg <- avgday[which(avgday[,2]==max(avgday[,2])),]
 ```
 
 
-The 5-Minute interval which the highest average (56.3) numer of steps is **1705**  
+The 5-Minute interval which the highest average (206.17) numer of steps is **835**  
 
 ##<span style="color:blue">Imputing missing values</span>
 
